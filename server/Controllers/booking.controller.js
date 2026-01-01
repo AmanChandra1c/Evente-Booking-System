@@ -8,45 +8,45 @@ const create_booking = async (req, res) => {
 
     // Validation
     if (!eventId || !name || !email || !mobile || !quantity) {
-      return res.status(400).json({ 
-        success: false, 
-        message: "All fields are required" 
+      return res.status(400).json({
+        success: false,
+        message: "All fields are required",
       });
     }
 
     if (quantity <= 0) {
-      return res.status(400).json({ 
-        success: false, 
-        message: "Quantity must be greater than 0" 
+      return res.status(400).json({
+        success: false,
+        message: "Quantity must be greater than 0",
       });
     }
 
-    if (!email.includes('@') || !email.includes('.')) {
-      return res.status(400).json({ 
-        success: false, 
-        message: "Invalid email format" 
+    if (!email.includes("@") || !email.includes(".")) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid email format",
       });
     }
 
     if (mobile.length < 10) {
-      return res.status(400).json({ 
-        success: false, 
-        message: "Mobile number must be at least 10 digits" 
+      return res.status(400).json({
+        success: false,
+        message: "Mobile number must be at least 10 digits",
       });
     }
 
     const event = await Event.findById(eventId);
     if (!event) {
-      return res.status(404).json({ 
-        success: false, 
-        message: "Event not found" 
+      return res.status(404).json({
+        success: false,
+        message: "Event not found",
       });
     }
 
     if (event.availableSeats < quantity) {
-      return res.status(400).json({ 
-        success: false, 
-        message: `Only ${event.availableSeats} seats available` 
+      return res.status(400).json({
+        success: false,
+        message: `Only ${event.availableSeats} seats available`,
       });
     }
 
@@ -73,14 +73,14 @@ const create_booking = async (req, res) => {
         ...booking.toObject(),
         eventTitle: event.title,
         eventDate: event.date,
-        eventLocation: event.location
+        eventLocation: event.location,
       },
     });
   } catch (error) {
     console.error("Booking creation error:", error);
-    res.status(500).json({ 
-      success: false, 
-      message: "Internal server error during booking" 
+    res.status(500).json({
+      success: false,
+      message: "Internal server error during booking",
     });
   }
 };
@@ -99,9 +99,9 @@ const get_bookings = async (req, res) => {
     });
   } catch (error) {
     console.error("Get bookings error:", error);
-    res.status(500).json({ 
-      success: false, 
-      message: "Error fetching bookings" 
+    res.status(500).json({
+      success: false,
+      message: "Error fetching bookings",
     });
   }
 };
@@ -114,29 +114,29 @@ const get_booking = async (req, res) => {
       .populate("userId", "name email");
 
     if (!booking) {
-      return res.status(404).json({ 
-        success: false, 
-        message: "Booking not found" 
+      return res.status(404).json({
+        success: false,
+        message: "Booking not found",
       });
     }
 
     // Only owner can view
     if (booking.userId._id.toString() !== req.user._id.toString()) {
-      return res.status(403).json({ 
-        success: false, 
-        message: "Unauthorized to view this booking" 
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized to view this booking",
       });
     }
 
-    res.status(200).json({ 
-      success: true, 
-      data: booking 
+    res.status(200).json({
+      success: true,
+      data: booking,
     });
   } catch (error) {
     console.error("Get booking error:", error);
-    res.status(400).json({ 
-      success: false, 
-      message: "Invalid booking ID or server error" 
+    res.status(400).json({
+      success: false,
+      message: "Invalid booking ID or server error",
     });
   }
 };
@@ -146,23 +146,23 @@ const cancel_booking = async (req, res) => {
   try {
     const booking = await Booking.findById(req.params.id);
     if (!booking) {
-      return res.status(404).json({ 
-        success: false, 
-        message: "Booking not found" 
+      return res.status(404).json({
+        success: false,
+        message: "Booking not found",
       });
     }
 
     if (booking.userId.toString() !== req.user._id.toString()) {
-      return res.status(403).json({ 
-        success: false, 
-        message: "Unauthorized to cancel this booking" 
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized to cancel this booking",
       });
     }
 
     if (booking.status === "cancelled") {
-      return res.status(400).json({ 
-        success: false, 
-        message: "Booking already cancelled" 
+      return res.status(400).json({
+        success: false,
+        message: "Booking already cancelled",
       });
     }
 
@@ -182,51 +182,9 @@ const cancel_booking = async (req, res) => {
     });
   } catch (error) {
     console.error("Cancel booking error:", error);
-    res.status(500).json({ 
-      success: false, 
-      message: "Error cancelling booking" 
-    });
-  }
-};
-
-/* ================= DELETE BOOKING ================= */
-const delete_booking = async (req, res) => {
-  try {
-    const booking = await Booking.findById(req.params.id);
-    if (!booking) {
-      return res.status(404).json({ 
-        success: false, 
-        message: "Booking not found" 
-      });
-    }
-
-    if (booking.userId.toString() !== req.user._id.toString()) {
-      return res.status(403).json({ 
-        success: false, 
-        message: "Unauthorized to delete this booking" 
-      });
-    }
-
-    // Restore seats if confirmed
-    if (booking.status === "confirmed") {
-      const event = await Event.findById(booking.eventId);
-      if (event) {
-        event.availableSeats += booking.quantity;
-        await event.save();
-      }
-    }
-
-    await booking.deleteOne();
-
-    res.status(200).json({
-      success: true,
-      message: "Booking deleted successfully",
-    });
-  } catch (error) {
-    console.error("Delete booking error:", error);
-    res.status(500).json({ 
-      success: false, 
-      message: "Error deleting booking" 
+    res.status(500).json({
+      success: false,
+      message: "Error cancelling booking",
     });
   }
 };
@@ -236,5 +194,4 @@ module.exports = {
   get_bookings,
   get_booking,
   cancel_booking,
-  delete_booking,
 };

@@ -1,7 +1,12 @@
 import React, { useContext, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
 import { UserContext } from "../../context/Context";
+import Button from "../components/ui/Button";
+import { Card, CardBody } from "../components/ui/Card";
+import ScrollReveal from "../components/ui/ScrollReveal";
+import Input from "../components/ui/Input";
 import API from "../../api/axios";
 
 const LoginPage = () => {
@@ -10,7 +15,6 @@ const LoginPage = () => {
     email: "",
     password: "",
   });
-
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -21,7 +25,6 @@ const LoginPage = () => {
   };
 
   const handleSubmit = async (e) => {
-    // setLoading(true);
     e.preventDefault();
 
     if (!formData.email.trim()) {
@@ -33,82 +36,121 @@ const LoginPage = () => {
     }
 
     try {
+      setLoading(true);
       const res = await API.post("/auth/signin", { formData });
       setUser(res.data);
-      toast.success("loged in successfully");
-      if (res.data.role === "admin") {
-        navigate("/admin");
-      } else {
-        navigate("/");
-      }
+      toast.success("Logged in successfully");
+      
+      // Add smooth transition delay
+      setTimeout(() => {
+        if (res.data.role === "admin") {
+          navigate("/admin");
+        } else {
+          navigate("/");
+        }
+      }, 500);
     } catch (error) {
       console.error(error.response?.data?.message);
-      toast.error(error.response?.data.message);
+      toast.error(error.response?.data.message || "Login failed");
     } finally {
-      // setLoading(false);
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500">
-      <div className="w-full max-w-md bg-white/90 backdrop-blur-lg rounded-2xl shadow-2xl p-8">
-        {/* Header */}
-        <h2 className="text-3xl font-bold text-center text-gray-800">
-          Welcome Back 👋
-        </h2>
-        <p className="text-center text-gray-500 mt-2">Login to your account</p>
-
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="mt-8 space-y-5">
-          {/* Email */}
-          <div>
-            <label className="text-sm font-medium text-gray-700">
-              Email Address
-            </label>
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              placeholder="john@example.com"
-              className="mt-1 w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 outline-none transition"
-            />
+    <div className="min-h-screen bg-slate-900 flex items-center justify-center relative overflow-hidden">
+      {/* Background Pattern */}
+      <div className="absolute inset-0 opacity-10">
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 via-purple-600/20 to-pink-600/20"></div>
+        <div className="absolute inset-0">
+          <div className="h-full w-full opacity-20">
+            <div className="h-full w-full bg-gradient-to-br from-blue-600/10 via-purple-600/10 to-pink-600/10"></div>
+            <div className="h-full w-full bg-gradient-to-tr from-pink-600/5 via-blue-600/5 to-purple-600/5"></div>
+            <div className="h-full w-full bg-gradient-to-bl from-purple-600/3 via-blue-600/3 to-pink-600/3"></div>
           </div>
+        </div>
+      </div>
 
-          {/* Password */}
-          <div>
-            <label className="text-sm font-medium text-gray-700">
-              Password
-            </label>
-            <input
-              type="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              placeholder="********"
-              className="mt-1 w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 outline-none transition"
-            />
-          </div>
+      <div className="relative z-10 w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <ScrollReveal direction="up" delay={0.1}>
+          <Card glass className="overflow-hidden">
+            <CardBody className="p-8">
+              {/* Header */}
+              <motion.div 
+                className="text-center mb-8"
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, type: "spring" }}
+              >
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full mb-4">
+                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                </div>
+                
+                <h1 className="text-4xl font-bold text-gradient mb-2">
+                  Welcome Back
+                </h1>
+                
+                <p className="text-slate-400 text-lg">
+                  Sign in to access your account
+                </p>
+              </motion.div>
 
-          {/* Button */}
-          <button
-            type="submit"
-            className="w-full py-3 cursor-pointer rounded-lg font-semibold text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 transform hover:-translate-y-0.5 transition-all duration-300 shadow-lg"
-          >
-            Login
-          </button>
-        </form>
+              {/* Form */}
+              <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+                <Input
+                  label="Email Address"
+                  name="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="john@example.com"
+                  glass
+                  required
+                />
 
-        {/* Footer */}
-        <p className="text-center text-sm text-gray-600 mt-6">
-          Don’t have an account?{" "}
-          <Link
-            to="/register"
-            className="text-indigo-600 font-semibold cursor-pointer hover:underline"
-          >
-            Register
-          </Link>
-        </p>
+                <Input
+                  label="Password"
+                  name="password"
+                  type="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder="Enter your password"
+                  glass
+                  required
+                />
+
+                <Button
+                  type="submit"
+                  variant="primary"
+                  size="lg"
+                  className="w-full text-sm sm:text-base py-3 sm:py-4"
+                >
+                  <span className="flex items-center justify-center">
+                    <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4 4m4-4v4m-4 4h8" />
+                    </svg>
+                    Sign In
+                  </span>
+                </Button>
+              </form>
+
+              {/* Footer */}
+              <div className="text-center pt-4 sm:pt-6 border-t border-slate-700">
+                <p className="text-slate-400 text-sm sm:text-base">
+                  Don't have an account?{" "}
+                  <Link
+                    to="/register"
+                    className="text-blue-400 font-semibold hover:text-blue-300 transition-colors"
+                  >
+                    Create Account
+                  </Link>
+                </p>
+              </div>
+            </CardBody>
+          </Card>
+        </ScrollReveal>
       </div>
     </div>
   );
