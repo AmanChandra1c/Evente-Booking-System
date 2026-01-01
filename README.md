@@ -31,7 +31,7 @@ A modern, full-stack event booking application built with React, Node.js, and Mo
 Before you begin, ensure you have the following installed:
 
 - **Node.js** (v16.0.0 or higher)
-- **npm** or **yarn** package manager
+- **npm** package manager
 - **MongoDB** (local installation or MongoDB Atlas)
 - **Git** for version control
 
@@ -49,12 +49,14 @@ cd Evente-Booking-System
 #### Server Dependencies
 ```bash
 cd server
+npm init
 npm install
 ```
 
 #### Client Dependencies
 ```bash
 cd ../client
+npm init
 npm install
 ```
 
@@ -65,62 +67,37 @@ Create a `.env` file in the `server` directory:
 
 ```env
 # Server Configuration
-PORT=5000
-NODE_ENV=development
-
+PORT=8000
+NODE_ENV="development"
 # Database Configuration
 MONGODB_URI=mongodb://localhost:27017/evente-booking
-# OR for MongoDB Atlas
-# MONGODB_URI=mongodb+srv://<username>:<password>@cluster.mongodb.net/evente-booking
 
 # JWT Configuration
 JWT_SECRET=your-super-secret-jwt-key-here
-JWT_EXPIRE=7d
-
-# CORS Configuration
-FRONTEND_URL=http://localhost:3000
 ```
 
 #### Client Environment Variables
 Create a `.env` file in the `client` directory:
 
 ```env
-REACT_APP_API_URL=http://localhost:5000
+VITE_API_BASE_URL = "http://localhost:8000/"
 ```
 
-### 4. Database Setup
-
-#### Option 1: Local MongoDB
-```bash
-# Start MongoDB service
-mongod
-
-# Create database (optional - will be created automatically)
-mongo
-use evente-booking
-```
-
-#### Option 2: MongoDB Atlas
-1. Create a free account at [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
-2. Create a new cluster
-3. Get your connection string
-4. Add it to your server `.env` file
-
-### 5. Run the Application
+### 4. Run the Application
 
 #### Start the Server
 ```bash
 cd server
-npm run dev
+npx nodemon
 ```
-Server will run on `http://localhost:5000`
+Server will run on `http://localhost:8000`
 
 #### Start the Client
 ```bash
 cd client
-npm start
+npm run dev
 ```
-Client will run on `http://localhost:3000`
+Client will run on `http://localhost:5173`
 
 ## 📁 Project Structure
 
@@ -145,42 +122,22 @@ Evente-Booking-System/
 ├── README.md
 └── .gitignore
 ```
-
-## 🔧 Development Scripts
-
-### Server Scripts
-```bash
-npm run dev          # Start development server with nodemon
-npm start            # Start production server
-npm test             # Run tests
-```
-
-### Client Scripts
-```bash
-npm start            # Start development server
-npm run build        # Build for production
-npm test             # Run tests
-npm run eject        # Eject (one-way operation)
-```
-
 ## 🎯 API Endpoints
 
 ### Authentication
-- `POST /api/auth/register` - User registration
-- `POST /api/auth/login` - User login
-- `GET /api/auth/checkauth` - Check authentication status
+- `POST /register` - User registration
+- `POST /login` - User login
 
 ### Events
-- `GET /api/event/get-events` - Get all events
-- `GET /api/event/get-admin-events` - Get admin events
-- `POST /api/event/create-event` - Create new event
-- `PUT /api/event/update-event/:id` - Update event
-- `DELETE /api/event/delete-event/:id` - Delete event
+- `GET /events/get-events` - Get all events
+- `GET /events/get-admin-events` - Get admin events
+- `POST /events/create-event` - Create new event
+- `PUT /events/update-event/:id` - Update event
+- `DELETE /events/delete-event/:id` - Delete event
 
 ### Bookings
-- `POST /api/booking/` - Create booking
-- `GET /api/booking/get-bookings` - Get user bookings
-- `GET /api/booking/get-admin-bookings` - Get admin bookings
+- `POST /booking/` - Create booking
+- `GET /booking/get-bookings` - Get user bookings
 
 ## 🎨 Key Components
 
@@ -203,94 +160,6 @@ npm run eject        # Eject (one-way operation)
 - **Password Hashing**: Bcrypt for password security
 - **CORS Protection**: Cross-origin resource sharing
 - **Input Validation**: Server-side validation
-- **Rate Limiting**: Prevent abuse (implement as needed)
-
-## 🐛 Troubleshooting
-
-### Common Issues
-
-#### 1. MongoDB Connection Error
-```bash
-# Check if MongoDB is running
-brew services list | grep mongodb  # macOS
-sudo systemctl status mongod        # Linux
-
-# Start MongoDB service
-brew services start mongodb        # macOS
-sudo systemctl start mongod        # Linux
-```
-
-#### 2. Port Already in Use
-```bash
-# Find process using port
-lsof -i :5000   # Server
-lsof -i :3000   # Client
-
-# Kill process
-kill -9 <PID>
-```
-
-#### 3. Environment Variables Not Found
-```bash
-# Verify .env files exist
-ls -la server/.env
-ls -la client/.env
-
-# Restart services after adding .env files
-```
-
-#### 4. CORS Issues
-- Ensure `FRONTEND_URL` in server `.env` matches client URL
-- Check API URL in client `.env` matches server URL
-
-### Debug Mode
-
-#### Server Debug
-```bash
-cd server
-DEBUG=* npm run dev
-```
-
-#### Client Debug
-- Open browser developer tools
-- Check Network tab for API calls
-- Console for JavaScript errors
-
-## 🚀 Deployment
-
-### Production Build
-
-#### Client
-```bash
-cd client
-npm run build
-```
-
-#### Server
-```bash
-cd server
-npm start
-```
-
-### Environment Variables for Production
-```env
-NODE_ENV=production
-MONGODB_URI=your-production-mongodb-uri
-JWT_SECRET=your-production-jwt-secret
-FRONTEND_URL=your-production-frontend-url
-```
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## 📝 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 🙏 Acknowledgments
 
@@ -299,16 +168,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **MongoDB** - For the flexible database solution
 - **Tailwind CSS** - For the utility-first CSS framework
 - **Framer Motion** - For the beautiful animations
-
-## 📞 Support
-
-If you have any questions or issues, please:
-
-1. Check the [Troubleshooting](#-troubleshooting) section
-2. Search existing [Issues](../../issues)
-3. Create a new [Issue](../../issues/new) with detailed information
-
----
 
 **Happy Coding! 🎉**
 
